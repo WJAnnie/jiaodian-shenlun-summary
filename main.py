@@ -11,6 +11,7 @@ from datetime import datetime
 
 # ============ 配置 ============
 SERVERCHAN_KEY = os.environ.get("SERVERCHAN_KEY", "")
+SERVERCHAN_KEY2 = os.environ.get("SERVERCHAN_KEY2", "")  # 第二个推送目标
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 
 
@@ -166,25 +167,42 @@ def simple_rewrite(title, content):
 # ============ 微信推送 ============
 def send_to_wechat(title, content):
     """通过Server酱推送到微信"""
-    if not SERVERCHAN_KEY:
-        print("未配置Server酱Key")
-        return False
-
-    url = f"https://sctapi.ftqq.com/{SERVERCHAN_KEY}.send"
-    data = {"title": title[:100], "desp": content}
-
-    try:
-        resp = requests.post(url, data=data, timeout=10)
-        result = resp.json()
-        if result.get('code') == 0:
-            print("微信推送成功！")
-            return True
-        else:
-            print(f"推送失败: {result}")
-            return False
-    except Exception as e:
-        print(f"推送异常: {e}")
-        return False
+    success = False
+    
+    # 推送到第一个目标
+    if SERVERCHAN_KEY:
+        url = f"https://sctapi.ftqq.com/{SERVERCHAN_KEY}.send"
+        data = {"title": title[:100], "desp": content}
+        try:
+            resp = requests.post(url, data=data, timeout=10)
+            result = resp.json()
+            if result.get('code') == 0:
+                print("微信推送成功！(目标1)")
+                success = True
+            else:
+                print(f"推送失败 (目标1): {result}")
+        except Exception as e:
+            print(f"推送异常 (目标1): {e}")
+    
+    # 推送到第二个目标
+    if SERVERCHAN_KEY2:
+        url = f"https://sctapi.ftqq.com/{SERVERCHAN_KEY2}.send"
+        data = {"title": title[:100], "desp": content}
+        try:
+            resp = requests.post(url, data=data, timeout=10)
+            result = resp.json()
+            if result.get('code') == 0:
+                print("微信推送成功！(目标2)")
+                success = True
+            else:
+                print(f"推送失败 (目标2): {result}")
+        except Exception as e:
+            print(f"推送异常 (目标2): {e}")
+    
+    if not SERVERCHAN_KEY and not SERVERCHAN_KEY2:
+        print("未配置任何Server酱Key")
+    
+    return success
 
 
 # ============ 主流程 ============

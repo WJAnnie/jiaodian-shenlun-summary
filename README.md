@@ -45,6 +45,9 @@ git push -u origin main
 3. 再添加一个：
    - Name: `DEEPSEEK_API_KEY`
    - Value: 你的DeepSeek API Key
+4. 可选：如需覆盖默认接口地址，可添加：
+   - Name: `DEEPSEEK_API_URL`
+   - Value: `https://api.edgefn.net/v1/chat/completions`
 
 ### 4. 启用 Actions
 

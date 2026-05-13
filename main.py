@@ -13,6 +13,10 @@ from datetime import datetime
 SERVERCHAN_KEY = os.environ.get("SERVERCHAN_KEY", "")
 SERVERCHAN_KEY2 = os.environ.get("SERVERCHAN_KEY2", "")  # 第二个推送目标
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
+DEEPSEEK_API_URL = os.environ.get(
+    "DEEPSEEK_API_URL",
+    "https://api.edgefn.net/v1/chat/completions",
+)
 
 
 # ============ 焦点访谈爬取 ============
@@ -129,7 +133,7 @@ def rewrite_as_shenlun(title, content):
 
     try:
         resp = requests.post(
-            "https://api.deepseek.com/chat/completions",
+            DEEPSEEK_API_URL,
             headers={
                 "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
                 "Content-Type": "application/json"
@@ -141,6 +145,7 @@ def rewrite_as_shenlun(title, content):
             },
             timeout=120
         )
+        resp.raise_for_status()
         result = resp.json()
         return result['choices'][0]['message']['content']
     except Exception as e:
